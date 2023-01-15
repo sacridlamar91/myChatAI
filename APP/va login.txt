@@ -1,0 +1,65 @@
+import csv
+import random
+import string
+import smtplib
+from email.mime.text import MIMEText
+
+# Function to generate a random nickname for the user
+def generate_nickname():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
+
+# Function to send a verification email to the user
+def send_verification_email(email):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.starttls()
+    server.login("your-email-address@gmail.com", "your-email-password")
+    
+    msg = MIMEText("Your verification code is: XYZ123")
+    msg['Subject'] = 'Email Verification'
+    msg['From'] = 'your-email-address@gmail.com'
+    msg['To'] = email
+    
+    server.sendmail('your-email-address@gmail.com', email, msg.as_string())
+    server.quit()
+
+# Function to verify the user's email address
+def verify_email(email):
+    # Prompt the user to enter the verification code
+    code = input("Please enter the verification code sent to your email: ")
+    
+    # Validate the code
+    if code == "XYZ123":
+        return True
+    else:
+        return False
+
+# Function to save the user's personal information to the backend database
+def save_to_database(nickname, dob, email):
+    with open('users.csv', 'a', newline='') as csvfile:
+        fieldnames = ['nickname', 'dob', 'email']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        writer.writerow({'nickname': nickname, 'dob': dob, 'email': email})
+
+# Function to check if the user is a new user
+def is_new_user(email):
+    with open('users.csv', 'r') as csvfile:
+        reader = csv.DictReader(csvfile)
+        
+        for row in reader:
+            if row['email'] == email:
+                return False
+        return True
+
+# Main function to handle the login process
+def login():
+    print("Welcome to our chatbot service!")
+    
+    # Prompt the user for their personal details
+    nickname = input("Please enter your nickname (or select 'generate' for a random nickname): ")
+    if nickname == "generate":
+        nickname = generate_nickname()
+        print("Your generated nickname is: " + nickname)
+    
+    dob = input("Please enter your date of birth (DD/MM/YYYY): ")
+    email = input

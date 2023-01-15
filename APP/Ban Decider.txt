@@ -1,0 +1,34 @@
+def report_user(user_id, report_type, screenshot=None):
+    # check if report_type is valid
+    if report_type not in ['harassment', 'trolling', 'spamming']:
+        raise ValueError("Invalid report type")
+    # check if user_id is valid and exists in the database
+    user = User.objects.get(id=user_id)
+    if not user:
+        raise ValueError("Invalid user ID")
+    # create a new report with the given information
+    report = Report(user=user, report_type=report_type, screenshot=screenshot)
+    report.save()
+    # check if user has reached the threshold for warnings
+    warnings = Warning.objects.filter(user=user).count()
+    if warnings >= 3:
+        # ban the user for a week and send a notification
+        user.banned = True
+        user.ban_expiry = timezone.now() + timedelta(weeks=1)
+        user.save()
+        send_notification(user, "You have been banned for a week due to multiple warnings")
+    else:
+        # send a warning to the user and add a warning to their record
+        send_notification(user, "You have received a warning for your behavior on the platform")
+        warning = Warning(user=user, report=report)
+        warning.save()
+
+
+
+As for the policies, it is important to have clear and fair rules in place to ensure a positive and safe environment for all users. Some possible considerations for these policies could include:
+
+    Defining acceptable and unacceptable behavior, such as harassment, trolling, and spamming
+    Outlining the consequences for violating these rules, including warnings, temporary bans, and permanent bans
+    Providing a way for users to report inappropriate behavior, such as through a dedicated "report" button or by contacting a moderator
+    Ensuring that all reports are investigated promptly and fairly, with appropriate action taken based on the findings
+    Providing resources and support for users who have experienced harassment or other negative behavior, including access to mental health professionals or other support services

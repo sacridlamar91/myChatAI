@@ -1,0 +1,76 @@
+# Import necessary libraries
+import sqlite3
+from flask import Flask, request, render_template
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+# Initialize the app
+app = Flask(__name__)
+
+# Connect to the database
+conn = sqlite3.connect('users.db')
+cursor = conn.cursor()
+
+# Create the messages table if it doesn't exist
+cursor.execute('''CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, user_id INTEGER, text TEXT, timestamp DATETIME)''')
+
+# Function to get a user's messages over time
+def get_user_messages(user_id):
+  # Get the user's messages from the database
+  cursor.execute('''SELECT * FROM messages WHERE user_id = ? ORDER BY timestamp''', (user_id,))
+  messages = cursor.fetchall()
+
+  # Extract the message timestamps and text
+  timestamps = [message['timestamp'] for message in messages]
+  texts = [message['text'] for message in messages]
+
+  return timestamps, texts
+
+# Route for the depression journey page
+@app.route('/depression_journey', methods=['GET'])
+def depression_journey():
+  # Get the user ID
+  user_id = request.args.get('user_id')
+
+  # Get the user's messages
+  timestamps, texts = get_user_messages(user_id)
+
+  # Set up the plot
+  fig, ax = plt.subplots()
+  line, = ax.plot([], [], lw=2)
+  ax.grid()
+  ax.set_xlabel('Time')
+  ax.set_ylabel('Depression Level')
+  ax.set_ylim(-1, 1)
+  ax.set_xlim(timestamps[0], timestamps[-1])
+
+# Animate the plot
+def animate(i):
+  # Get the user's messages
+  timestamps, texts = get_user_messages(user_id)
+
+  # Calculate the depression level for each message
+  levels = []
+  for text in texts:
+    # Calculate the depression level for the message
+    level = 0
+    for word in text.split():
+      if word in negative_words:
+        level -= 1
+      elif word in positive_words:
+        level += 1
+    levels.append(level)
+
+  # Update the plot data
+  line.set_data(timestamps, levels)
+
+  return line,
+
+# Set up the animation
+anim = animation.FuncAnimation(fig, animate, frames=len(timestamps), interval=200)
+
+# Render the plot
+plt.show()
+
+
+#This code sets up a Matplotlib plot that animates over time to show the user's depression level based on the sentiment of their messages. The depression level is calculated by counting the number of positive and negative words in the message and adding or subtracting from the level accordingly. The plot is updated with the new data at regular

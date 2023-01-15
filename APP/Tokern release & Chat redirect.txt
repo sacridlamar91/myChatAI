@@ -1,0 +1,35 @@
+# Import necessary libraries
+import pytz
+import datetime
+
+def send_tokens(sender, receiver, num_tokens):
+  # Check that the sender has enough tokens to send
+  if sender.tokens < num_tokens:
+    print("Error: sender does not have enough tokens to send")
+    return
+  
+  # Deduct the tokens from the sender's account
+  sender.tokens -= num_tokens
+  
+  # Add the tokens to the receiver's account
+  receiver.tokens += num_tokens
+  
+  # Send notification to the receiver
+  current_time = datetime.datetime.now(pytz.timezone('US/Pacific'))
+  print(f"{receiver.username}, you have received {num_tokens} tokens from {sender.username} at {current_time}")
+  
+  # Update the sender's "most influencing" badge, if applicable
+  if sender.num_tokens_sent > sender.most_influencing_threshold:
+    sender.has_most_influencing_badge = True
+  
+  # Add the receiver to the appropriate chat group
+  add_to_chat_group(receiver)
+
+def add_to_chat_group(user):
+  # Determine the appropriate chat group for the user based on their input
+  chat_group = determine_chat_group(user.input)
+  
+  # Add the user to the chat group
+  chat_group.add_member(user)
+
+This code includes functions to send tokens from one user to another, send a notification to the receiver, and update the sender's badge if they have sent a certain number of tokens. It also includes a function to add a user to the appropriate chat group based on their input.

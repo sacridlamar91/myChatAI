@@ -1,0 +1,122 @@
+import re
+import smtplib
+import time
+
+from email.mime.text import MIMEText
+
+def sign_up(username, password, email):
+  # validate inputs
+  if not re.match(r'^\w+$', username):
+    return 'Username can only contain letters, numbers, and underscores'
+  if not re.match(r'^\S+$', password):
+    return 'Password cannot contain whitespace'
+  if not re.match(r'^\S+@\S+\.\S+$', email):
+    return 'Invalid email address'
+
+  # check if username is available
+  if username_exists(username):
+    return 'Username is already taken'
+
+  # send confirmation email
+  send_confirmation_email(username, email)
+  return 'Confirmation email sent to ' + email
+
+def sign_in(username, password):
+  # validate inputs
+  if not re.match(r'^\w+$', username):
+    return 'Invalid username'
+  if not re.match(r'^\S+$', password):
+    return 'Invalid password'
+
+  # check if user exists and password is correct
+  user = get_user(username)
+  if user is None:
+    return 'Invalid username or password'
+  if not user.check_password(password):
+    return 'Invalid username or password'
+
+  # check if email is confirmed
+  if not user.email_confirmed:
+    return 'Please confirm your email address'
+
+  # sign in successful
+  return 'Welcome, ' + username
+
+def send_confirmation_email(username, email):
+  # generate confirmation code
+  confirmation_code = generate_confirmation_code(username)
+
+  # send email
+  msg = MIMEText('Welcome to our app, ' + username + '!\n\n'
+                 'Please confirm your email address by entering the following code:\n'
+                 + confirmation_code)
+  msg['Subject'] = 'Email Confirmation'
+  msg['To'] = email
+  s = smtplib.SMTP('localhost')
+  s.send_message(msg)
+  s.quit()
+
+def confirm_email(username, confirmation_code):
+  # check if confirmation code is correct
+  if not check_confirmation_code(username, confirmation_code):
+    return 'Invalid confirmation code'
+
+  # mark email as confirmed
+  user = get_user(username)
+  user.email_confirmed = True
+  user.save()
+  return 'Email confirmed'
+
+def generate_confirmation_code(username):
+  # generate random confirmation code
+  return str(time.time())
+
+def check_confirmation_code(username, confirmation
+.
+.
+.
+
+
+
+def sign_in_up_bot(self, user_input):
+    if user_input == "sign up":
+        # Prompt user for email address
+        email = input("Please enter your email address: ")
+        # Check if email is already in use
+        if email in self.users:
+            print("Sorry, that email is already in use. Please try again.")
+            return
+        # Prompt user for password
+        password = input("Please enter a password: ")
+        # Add email and password to users dictionary
+        self.users[email] = password
+        # Generate confirmation code and send to user's email
+        confirmation_code = generate_confirmation_code()
+        send_email(email, confirmation_code)
+        # Prompt user to enter confirmation code
+        code = input("Please check your email for a confirmation code and enter it here: ")
+        # Check if code is correct
+        if check_confirmation_code(code, confirmation_code):
+            print("Email confirmed! You are now signed up.")
+        else:
+            print("Sorry, that code is incorrect. Please try again.")
+            del self.users[email]
+    elif user_input == "sign in":
+        # Prompt user for email and password
+        email = input("Please enter your email: ")
+        password = input("Please enter your password: ")
+        # Check if email and password are correct
+        if email in self.users and self.users[email] == password:
+            print("Sign in successful!")
+        else:
+            print("Sorry, that email or password is incorrect. Please try again.")
+    else:
+        print("Sorry, I didn't understand that. Please try again.")
+
+
+
+
+
+
+
+

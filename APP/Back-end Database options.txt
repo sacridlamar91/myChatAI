@@ -1,0 +1,148 @@
+Users:
+  - id: INTEGER (primary key)
+  - username: TEXT
+  - password: TEXT
+  - date_of_birth: DATE
+  - pet_preference: TEXT
+  - coins: INTEGER
+  - badges: TEXT[]
+
+Groups:
+  - id: INTEGER (primary key)
+  - name: TEXT
+  - creator_id: INTEGER (foreign key to Users.id)
+  - member_ids: INTEGER[] (foreign keys to Users.id)
+
+Messages:
+  - id: INTEGER (primary key)
+  - sender_id: INTEGER (foreign key to Users.id)
+  - group_id: INTEGER (foreign key to Groups.id)
+  - text: TEXT
+  - timestamp: TIMESTAMP
+
+Recommendations:
+  - id: INTEGER (primary key)
+  - user_id: INTEGER (foreign key to Users.id)
+  - song_name: TEXT
+  - artist: TEXT
+  - likes: INTEGER
+
+Mentors:
+  - id: INTEGER (primary key)
+  - mentor_id: INTEGER (foreign key to Users.id)
+  - mentee_id: INTEGER (foreign key to Users.id)
+
+Partners:
+  - id: INTEGER (primary key)
+  - name: TEXT
+  - email: TEXT (unique)
+  - phone: TEXT (unique)
+  - fee: INTEGER
+  - ratings: INTEGER[]
+
+Reviews:
+  - id: INTEGER (primary key)
+  - partner_id: INTEGER (foreign key to Partners.id)
+  - user_id: INTEGER (foreign key to Users.id)
+  - review_text: TEXT
+
+
+This is just one way to organize the data, and there are many other ways you could do it as well. The important thing is to think about the relationships between the different types of data and how you want to be able to access and query it.
+
+
+
+
+import sqlite3
+
+# Create a connection to the database
+conn = sqlite3.connect('my_app.db')
+
+# Create a cursor
+cursor = conn.cursor()
+
+# Create a table for storing users
+cursor.execute('''
+    CREATE TABLE users (
+        user_id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        username TEXT NOT NULL,
+        password TEXT NOT NULL,
+        dob DATE NOT NULL,
+        pet_preference TEXT NOT NULL,
+        points INTEGER NOT NULL DEFAULT 0,
+        badges TEXT NOT NULL DEFAULT ''
+    )
+''')
+
+# Create a table for storing chat groups
+cursor.execute('''
+    CREATE TABLE chat_groups (
+        group_id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        type TEXT NOT NULL,
+        expiration_date DATE NOT NULL
+    )
+''')
+
+# Create a table for storing specialists
+cursor.execute('''
+    CREATE TABLE specialists (
+        specialist_id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL,
+        phone_number TEXT NOT NULL,
+        location TEXT NOT NULL,
+        rate REAL NOT NULL,
+        reviews TEXT NOT NULL DEFAULT ''
+    )
+''')
+
+# Commit the transaction
+conn.commit()
+
+# Close the connection
+conn.close()
+
+
+
+To store data in these tables, you can use SQL INSERT statements. For example:
+# Insert a new user into the "users" table
+cursor.execute('''
+    INSERT INTO users (name, username, password, dob, pet_preference)
+    VALUES (?, ?, ?, ?, ?)
+''', (name, username, password, dob, pet_preference))
+
+# Insert a new chat group into the "chat_groups" table
+cursor.execute('''
+    INSERT INTO chat_groups (name, type, expiration_date)
+    VALUES (?, ?, ?)
+''', (name, group_type, expiration_date))
+
+# Insert a new specialist into the "specialists" table
+cursor.execute('''
+    INSERT INTO specialists (name, email, phone_number, location, rate)
+    VALUES (?, ?, ?, ?, ?)
+''', (name, email, phone_number, location, rate))
+
+
+To retrieve data from these tables, you can use SQL SELECT statements. For example:
+
+# Get all users with a pet preference of "dog"
+cursor.execute('''
+    SELECT * FROM users
+    WHERE pet_preference = 'dog'
+''')
+
+# Get the chat group with the given group ID
+cursor.execute('''
+    SELECT * FROM chat_groups
+    WHERE group_id = ?
+''', (group_id,))
+
+# Get all specialists located in a given city
+cursor.execute('''
+    SELECT * FROM specialists
+    WHERE location = ?
+''', (city,))
+
+

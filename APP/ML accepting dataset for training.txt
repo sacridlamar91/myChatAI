@@ -1,0 +1,36 @@
+
+sample code for implementing a machine learning model that takes in a dataset as input and trains on it
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+
+# Load the dataset
+data = pd.read_csv('dataset.csv')
+
+# Split the dataset into features (X) and labels (y)
+X = data.iloc[:, :-1]
+y = data.iloc[:, -1]
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)
+
+# Scale the data using Standard Scaler
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Fit the linear regression model to the training data
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Evaluate the model on the test data
+score = model.score(X_test, y_test)
+print(f'Test score: {score:.2f}')
+
+
+This code first loads a dataset from a CSV file, then splits it into features and labels. It then splits the data into training and test sets, scales the data using Standard Scaler, and fits a linear regression model to the training data. Finally, it evaluates the model on the test data and prints the score.
+
+You can modify this code to suit your specific needs, such as using a different machine learning model or preprocessing the data in a different way.

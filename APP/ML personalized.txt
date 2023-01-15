@@ -1,0 +1,34 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+
+# Load the data set
+data = pd.read_csv('data.csv')
+
+# Split the data into training and test sets
+X = data.drop(['label'], axis=1)
+y = data['label']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Standardize the features
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Train the model
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
+
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+
+# Evaluate the model
+accuracy = np.mean(y_pred == y_test)
+print(f'Model accuracy: {accuracy:.2f}')
+
+
+This code will create a random forest classifier, which is a type of machine learning model that is commonly used for classification tasks. The model is trained on the training data, and then tested on the test data to evaluate its performance.
+
+To use this model in your web app, you can simply feed it the user's input data and get back a prediction of which group the user should be redirected to. The model will continue to learn and update as more users interact with the app, so it should be able to give increasingly personalized recommendations over time.

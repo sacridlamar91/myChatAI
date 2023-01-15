@@ -1,0 +1,59 @@
+# Import necessary libraries
+import sqlite3
+import smtplib
+from email.message import EmailMessage
+from datetime import datetime, timedelta
+from flask import Flask, request, render_template
+
+# Initialize the app
+app = Flask(__name__)
+
+# Connect to the database
+conn = sqlite3.connect('users.db')
+cursor = conn.cursor()
+
+# Create the users table if it doesn't exist
+cursor.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, email TEXT, dob TEXT, gifts INTEGER)''')
+
+# Function to send an email to the user
+def send_email(email, subject, body):
+  # Set up the email server
+  server = smtplib.SMTP('smtp.gmail.com', 587)
+  server.starttls()
+  server.login('your-email@example.com', 'your-email-password')
+
+  # Create the email message
+  msg = EmailMessage()
+  msg['From'] = 'your-email@example.com'
+  msg['To'] = email
+  msg['Subject'] = subject
+  msg.set_content(body)
+
+  # Send the email
+  server.send_message(msg)
+  server.quit()
+
+# Function to check if it is a user's birthday
+def is_birthday(dob):
+  # Get the current date and the user's birthday this year
+  today = datetime.today()
+  bday = datetime.strptime(dob, '%Y-%m-%d')
+  bday = bday.replace(year=today.year)
+
+  # Check if it is the user's birthday
+  return today.month == bday.month and today.day == bday.day
+
+# Route for the birthday page
+@app.route('/birthday', methods=['GET'])
+def birthday():
+  # Get the current user's ID
+  user_id = request.args.get('user_id')
+
+  # Get the user's information from the database
+  cursor.execute('''SELECT * FROM users WHERE id = ?''', (user_id,))
+  user = cursor.fetchone()
+
+  # Check if it is the user's birthday
+  if is_birthday(user['dob']):
+    # Get the count of users with the same birthday
+    cursor.execute('''SELECT COUNT(*) FROM users WHERE dob = ?''

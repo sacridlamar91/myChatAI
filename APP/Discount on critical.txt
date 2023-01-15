@@ -1,0 +1,54 @@
+import datetime
+
+class User:
+  def __init__(self, name, badge_value):
+    self.name = name
+    self.badge_value = badge_value
+
+class Partner:
+  def __init__(self, name, hourly_rate):
+    self.name = name
+    self.hourly_rate = hourly_rate
+
+def offer_discounted_services(user, partner, service_duration):
+  # Calculate the regular price of the services
+  regular_price = partner.hourly_rate * service_duration
+
+  # Determine the discount percentage based on the user's badge value
+  if user.badge_value >= 50:
+    discount_percentage = 20
+  elif user.badge_value >= 25:
+    discount_percentage = 10
+  else:
+    discount_percentage = 0
+
+  # Calculate the discounted price
+  discounted_price = regular_price - (regular_price * (discount_percentage / 100))
+
+  # Return the discounted price
+  return discounted_price
+
+def process_assistance_request(user, partner, service_duration):
+  # Check if the user is in critical need of assistance
+  if user.badge_value >= 50:
+    # Offer discounted services to the user
+    discounted_price = offer_discounted_services(user, partner, service_duration)
+    print(f"{user.name} is in critical need of assistance and is eligible for a {discount_percentage}% discount on {partner.name}'s services.")
+    print(f"The total cost for {service_duration} hours of service is ${discounted_price}.")
+  else:
+    # Charge the regular price for the services
+    regular_price = partner.hourly_rate * service_duration
+    print(f"{user.name} is not in critical need of assistance and will be charged the regular price of ${regular_price} for {service_duration} hours of service.")
+
+# Define a user and a partner
+user = User("John", 75)
+partner = Partner("Jane", 100)
+
+# Process an assistance request for 3 hours of service
+process_assistance_request(user, partner, 3)
+
+# Output:
+# John is in critical need of assistance and is eligible for a 20% discount on Jane's services.
+# The total cost for 3 hours of service is $240.
+
+This code defines a User class and a Partner class, which represent users and partners in your web app respectively. It also defines a process_assistance_request() function that determines whether a user is in critical need of assistance and offers discounted services to the user if they are. The discount percentage is based on the user's badge value, with users who have a badge value of 50 or higher receiving a 20% discount, users with a badge

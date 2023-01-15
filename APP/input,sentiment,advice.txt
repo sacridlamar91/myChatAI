@@ -1,0 +1,50 @@
+import nltk
+import csv
+
+# Function to analyze the sentiment of the user's input
+def analyze_sentiment(text):
+    # Use NLTK to classify the input as either suicidal or depressed
+    sentiment = nltk.sentiment.util.demo_liu_hu_lexicon(text)
+    
+    if sentiment > 0:
+        return "depressed"
+    else:
+        return "suicidal"
+
+# Function to provide relevant advice to the user
+def provide_advice(sentiment):
+    if sentiment == "depressed":
+        return "It sounds like you might be feeling depressed. Here are some things that might help: try talking to a trusted friend or family member, engage in activities that you enjoy, and seek professional help if needed."
+    else:
+        return "It sounds like you might be feeling suicidal. Please seek immediate help by calling the National Suicide Prevention Lifeline at 1-800-273-TALK (8255). You are not alone and there are people who care about you and want to help."
+
+# Main function to handle user input and provide advice
+def chatbot():
+    # Get user input
+    user_input = input("What's on your mind? ")
+    
+    # Analyze the sentiment of the input
+    sentiment = analyze_sentiment(user_input)
+    
+    # Get relevant advice for the user
+    advice = provide_advice(sentiment)
+    
+    # Print the advice
+    print(advice)
+    
+    # Get the user's personal details
+    username = input("What is your username? ")
+    email = input("What is your email address? ")
+    
+    # Categorize the user's input into one of the following needs: attention, community, intimacy, mind/body connection, control, security, meaning and purpose, and status
+    needs = input("Which of the following needs do you feel you are lacking in? (attention, community, intimacy, mind/body connection, control, security, meaning and purpose, status) ")
+    
+    # Save the user's personal details and categorization of their input into a CSV file
+    with open('chatbot_data.csv', 'a', newline='') as csvfile:
+        fieldnames = ['username', 'email', 'need', 'sentiment']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        writer.writerow({'username': username, 'email': email, 'need': needs, 'sentiment': sentiment})
+
+# Run the chatbot
+chatbot()

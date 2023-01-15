@@ -1,0 +1,2 @@
+Secret openai API Key:
+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

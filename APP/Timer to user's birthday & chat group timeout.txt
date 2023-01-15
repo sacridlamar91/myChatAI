@@ -1,0 +1,32 @@
+# Import necessary libraries
+import sqlite3
+from flask import Flask, request, render_template
+from datetime import datetime, timedelta
+import threading
+
+# Initialize the app
+app = Flask(__name__)
+
+# Connect to the database
+conn = sqlite3.connect('users.db')
+cursor = conn.cursor()
+
+# Create the users table if it doesn't exist
+cursor.execute('''CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, username TEXT, email TEXT, dob TEXT, chat_group_id INTEGER)''')
+
+# Function to get the time remaining until a user's birthday
+def get_time_remaining(dob):
+  # Get the current date and the user's birthday this year
+  today = datetime.today()
+  bday = datetime.strptime(dob, '%Y-%m-%d')
+  bday = bday.replace(year=today.year)
+
+  # Calculate the time remaining until the user's birthday
+  time_remaining = bday - today
+  if time_remaining < timedelta(0):
+    time_remaining = timedelta(0)
+
+  return time_remaining
+
+# Function to terminate a chat group
+def terminate_chat_group(chat_group_id):

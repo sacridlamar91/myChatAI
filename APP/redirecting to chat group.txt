@@ -1,0 +1,62 @@
+import csv
+import nltk
+
+# Function to analyze the user's input and determine their need
+def analyze_input(text):
+    # Use NLTK or a pre-trained machine learning model to classify the input
+    need = classify(text)
+    
+    # Save the need to the database
+    save_to_database(need)
+    
+    return need
+
+# Function to save the user's need to the backend database
+def save_to_database(need):
+    with open('users.csv', 'a', newline='') as csvfile:
+        fieldnames = ['need']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        
+        writer.writerow({'need': need})
+
+# Function to provide human-like advice to the user
+def provide_advice(need):
+    if need == "attention":
+        return "It sounds like you might be feeling lonely and in need of attention. It can be helpful to reach out to trusted friends or family members for support and spend time with them. It's also important to take care of yourself and engage in activities that bring you joy."
+    elif need == "community":
+        return "It sounds like you might be feeling isolated and in need of a sense of community. Consider joining a club or group that shares your interests, or volunteering in your local community. Building connections with others can help improve your sense of belonging and overall well-being."
+    elif need == "intimacy":
+        return "It sounds like you might be feeling a lack of intimacy in your relationships. It can be helpful to openly communicate your needs and feelings with your loved ones and consider seeking support from a therapist to work on building more fulfilling relationships."
+    # Add advice for other needs
+    else:
+        return "It sounds like you might be struggling with something. Please don't hesitate to reach out for support. It's important to take care of yourself and seek help when you need it."
+
+# Function to redirect the user to a chat group that matches their problem
+def redirect_to_chat_group(need):
+    # Pre-determined mapping of needs to chat groups
+    chat_groups = {
+        "attention": "Loneliness Support Group",
+        "community": "Social Connection Chat",
+        "intimacy": "Relationship Advice Group"
+        # Add mappings for other needs
+    }
+    
+    # Redirect the user to the appropriate chat group
+    print("Redirecting you to the '" + chat_groups[need] + "' chat group...")
+
+# Main function to handle the user's input and provide advice
+def chatbot():
+    # Prompt the user to input their message
+    user_input = input("What's on your mind? ")
+    
+    # Analyze the user's input and determine their need
+    need = analyze_input(user_input)
+    
+    # Provide human-like advice to the user
+    advice = provide_advice(need)
+    print(advice)
+    
+    # Redirect the user to a chat group that matches their problem
+    redirect_to_chat_group(need)
+    
+    # Passively detect

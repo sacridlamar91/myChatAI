@@ -1,0 +1,8 @@
+.env
+*.json
+*.csv
+
+#Ignore pycache
+__pycache__
+*/__pycache__
+*.pyc

@@ -1,0 +1,92 @@
+Here is an example of how you might implement a web application that determines whether a user is allowed to join a chat group with sensitive content based on their age and location using JavaScript, React, Tailwind CSS, Redux Toolkit, and geo-location APIs:
+
+// Import necessary libraries
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useGeolocation } from "react-use";
+import {
+  setAge,
+  setChatGroup,
+  setLocation,
+  setAllowed
+} from "./chatSlice";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Flex,
+  Text
+} from "@chakra-ui/core";
+
+// Define the age limit for each chat group
+const chatGroups = {
+  "Sensitive Content": 18,
+  "General Discussion": 13
+};
+
+// Define the Join Chat Group component
+function JoinChatGroup() {
+  // Use the state from the Redux store
+  const age = useSelector(state => state.chat.age);
+  const chatGroup = useSelector(state => state.chat.chatGroup);
+  const location = useSelector(state => state.chat.location);
+  const allowed = useSelector(state => state.chat.allowed);
+
+  // Use the dispatch function from the Redux store
+  const dispatch = useDispatch();
+
+  // Use the geolocation hook to get the user's location
+  const { latitude, longitude } = useGeolocation();
+
+  // Handle changes to the age input
+  const handleAgeChange = e => {
+    dispatch(setAge(e.target.value));
+  };
+
+  // Handle changes to the chat group input
+  const handleChatGroupChange = e => {
+    dispatch(setChatGroup(e.target.value));
+  };
+
+  // Handle changes to the location
+  const handleLocationChange = () => {
+    dispatch(setLocation({ latitude, longitude }));
+  };
+
+  // Handle the submit button click
+  const handleSubmit = () => {
+    // Check if the user's age is above the age limit for the selected chat group
+    if (age < chatGroups[chatGroup]) {
+      dispatch(setAllowed(false));
+      alert("You are not allowed to join this chat group");
+    } else {
+      dispatch(setAllowed(true));
+      alert("Welcome to the chat group");
+    }
+  };
+
+  return (
+    <Flex
+      direction="column"
+      alignItems="center"
+      justifyContent="center"
+      className="bg-gray-100 h-screen"
+    >
+      <FormControl>
+        <FormLabel>Age</FormLabel>
+        <Input
+          type="number"
+          value={age}
+          onChange={handleAgeChange}
+          className="bg-white"
+        />
+      </FormControl>
+      <FormControl>
+        <FormLabel>Chat Group</FormLabel>
+        <select value={chatGroup} onChange={handleChatGroupChange}>
+          <option value="Sensitive Content">Sensitive Content</option>
+          <option value="General Discussion">General Discussion</option>
+        </select>
+      </FormControl>
+      <Button onClick={handleLocationChange}>Use Current Location</

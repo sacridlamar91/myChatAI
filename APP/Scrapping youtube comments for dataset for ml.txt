@@ -1,0 +1,84 @@
+# Import necessary libraries
+import os
+import googleapiclient.discovery
+import googleapiclient.errors
+import spacy
+
+# Load the spaCy model for sentiment analysis
+nlp = spacy.load('en_core_web_md')
+
+# Set the YouTube API key and video ID
+API_KEY= 'AIzaSyDWgEE1fKmr2kZ6zqJ4Lm8ib1xlaqX-ANE'
+video_id = 'https://youtu.be/FskL-2jrgF0'
+# Set up the YouTube API client
+youtube = googleapiclient.discovery.build('youtube', 'v3', developerKey=API_KEY)
+
+# Request the comments for the video
+request = youtube.commentThreads().list(part='snippet', videoId=video_id, textFormat='plainText')
+response = request.execute()
+
+# Iterate through the comments
+for item in response['items']:
+  comment = item['snippet']['topLevelComment']['snippet']['textDisplay']
+  print(comment)
+
+  # Analyze the sentiment of the comment using spaCy
+  doc = nlp(comment)
+  print(doc.sentiment)
+
+
+#This code will scrape the comments for a given YouTube video and use spaCy to analyze the sentiment of each comment. You can modify the code to scrape multiple videos or to filter the comments based on specific keywords related to depression. You can then use the resulting data to train a machine learning model to detect the sentiment of user input and classify it as depressed or non-depressed.
+
+
+
+
+#Here are a few additional recommendations for using YouTube comments to train a machine learning model to detect depression:
+
+    Consider using a larger dataset by scraping comments from multiple videos or by using a dataset of comments that have been manually labeled by experts. This will help to improve the accuracy of the model.
+
+    Pre-process the comments to remove noise, such as emojis, punctuation, and non-alphabetic characters. This will help to focus the model on the important features of the text.
+
+    Use a machine learning algorithm that is well-suited for text classification, such as a support vector machine (SVM) or a random forest.
+
+    Consider using a combination of word embeddings (such as word2vec or GloVe) and additional features, such as the presence of certain keywords or the length of the comment, to improve the model's performance.
+
+    Use cross-validation to evaluate the performance of the model and tune the hyperparameters to optimize the results.
+
+    Be aware that YouTube comments may not be representative of the general population and may contain biased or inappropriate content. This may affect the generalizability of the model to other datasets or real-world situations
+
+
+#Below is code for getting dataset from multiple sources 
+
+## Import necessary libraries
+import requests
+from bs4 import BeautifulSoup
+import csv
+
+# Set the URLs of the web pages to scrape
+urls = ['URL_1', 'URL_2', 'URL_3']
+
+# Initialize an empty list to store the comments
+comments = []
+
+# Iterate through the URLs
+for url in urls:
+  # Send a GET request to the URL
+  response = requests.get(url)
+
+  # Parse the HTML content of the page
+  soup = BeautifulSoup(response.content, 'html.parser')
+
+  # Find the element containing the comments
+  comment_elements = soup.find_all('div', class_='comment')
+
+  # Extract the text of each comment
+  for element in comment_elements:
+    comment = element.text
+    comments.append(comment)
+
+# Write the comments to a CSV file
+with open('comments.csv', 'w', newline='') as csvfile:
+  writer = csv.writer(csvfile)
+  writer.writerows(comments)
+
+#This code will scrape the comments from each of the specified URLs, extract the text of each comment, and save them to a CSV file. You can modify the code to scrape different types of web pages or to extract different types of data from the pages. You can also use the pandas library to read and manipulate the data in the CSV file before training a machine learning model.
